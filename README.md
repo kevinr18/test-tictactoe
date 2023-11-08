@@ -47,87 +47,85 @@ Ya con el servidor activado podemos empezar a realizar solicitudes http ya sea p
 - __Create User__
 Crea un usuario o jugador para la aplicación:
 	 - Metodo Post:  
-		 __URL:__
+		 - __URL:__  
 		http://localhost:8000/api/v1/users/
-		__body:__
+		- __body:__  
 		{"username":  "player1",  "password":  "player"}
-		__Response:__
+		- __Response:__  
 		{"token":  "699b8ee46510ce1fc53503d7f270ad90d6629d64"}
 
 - __Login User:__
 	Inicias sesión con el "username" y "password" para proporcionar un token.
 	- Metodo Post:
-	    __URL:__
+		- __URL:__  
 		http://localhost:8000/api/v1/login/
-		__body:__
+		- __body:__  
 		{"username":  "player1",  "password":  "player"}
-		__Response:__
+		- __Response:__  
 		{"token":  "699b8ee46510ce1fc53503d7f270ad90d6629d64"}
 
 - __Logout__ (Requiere autenticación):
 	Cierras sesión del usuario, eliminando el token.
 	- Metodo Get:
-		__Header:__
-		|       key       |       value       |
-		| ------------- | ------------- | 
-		|   Authorization | Token 20be367e924edfd3c4a9e9ca2694583d8cdb3ed4 | 
-	    __URL:__
+		- __Header:__  
+		key= "Authorization"  
+		value="Token 20be367e924edfd3c4a9e9ca2694583d8cdb3ed4" 
+		- __URL:__  
 		http://localhost:8000/api/v1/logout/
-		__Response:__
+		- __Response:__  
 		{"message":  "Cierre de sesión exitoso. El token ha sido eliminado."}
 
 #### -  App tictactoe:
-
 - __Game List__ (Requiere autenticación):
 Crea o inicia una partida contra un oponente (se debe crear un oponente previamente).
 	- Metodo Post:
-		__Header:__
-		|       key       |       value       |
-		| ------------- | ------------- | 
-		|   Authorization | Token 20be367e924edfd3c4a9e9ca2694583d8cdb3ed4 | 
-	    __URL:__
+		- __Header:__  
+		key= "Authorization"  
+		value="Token 20be367e924edfd3c4a9e9ca2694583d8cdb3ed4"  
+	    	- __URL:__  
 		http://localhost:8000/api/v1/games/
-		__body:__
+		- __body:__  
 		{"opposing_player":  "player2"}
-		__Response:__
+		- __Response:__  
 		{
 			"message":  ""Mensaje":  "La partida ha comenzado",
 			"Game": object(Game)
 		}
+
 - __Game Details__ (Requiere autenticación):
 Visualizas una partida previamente creada.
 	- Metodo Get:
-		__Header:__
-		|       key       |       value       |
-		| ------------- | ------------- | 
-		|   Authorization | Token 20be367e924edfd3c4a9e9ca2694583d8cdb3ed4 | 
-	    __URL:__
+		- __Header:__  
+		key= "Authorization"  
+		value="Token 20be367e924edfd3c4a9e9ca2694583d8cdb3ed4"  
+	    	- __URL:__
 		http://localhost:8000/api/v1/games/{game_id}/
-		__Response:__
+		- __Response:__
 		{
 			"Game": object(Game)
 		}
+
 - __Make Move__ (Requiere autenticación):
 Realiza un movimiento el jugador autenticado (posiciones validas: del 0 al 8: donde cada posicion equivale a un tablero de tictactoe de 3x3).
 	- Metodo Post:
-		__Header:__
-		|       key       |       value       |
-		| ------------- | ------------- | 
-		|   Authorization | Token 20be367e924edfd3c4a9e9ca2694583d8cdb3ed4 | 
-	    __URL:__
+		- __Header:__  
+		key= "Authorization"  
+		value="Token 20be367e924edfd3c4a9e9ca2694583d8cdb3ed4"  
+	    	- __URL:__  
 		http://localhost:8000/api/v1/games/{game_id}/make_move/
-		__body:__
+		- __body:__  
 		{"position":  "0"}
-		__Response:__
+		- __Response:__  
 		{
 			"Game": object(Game)
 		}
+
 - __Game Log__:
 Se pueden visualizar los movimientos que realizaron los jugadores en un juego especifico (game_id).
 	- Metodo Get:
-	    __URL:__
+	    	- __URL:__  
 		http://localhost:8000/api/v1/games/{game_id}/log/
-		__Response:__
+		- __Response:__  
 		{
 			"player": object(User),
 			"move": 1,
