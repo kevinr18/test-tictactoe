@@ -7,6 +7,7 @@ from .serializers import GameSerializer, GameLogSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import AllowAny
 
 
 class GameListCreate(APIView):
@@ -24,7 +25,7 @@ class GameListCreate(APIView):
         except User.DoesNotExist:
             return Response(
                 {
-                    'Mensaje': f'El usuario ({opposing_player}) no existe,' +\
+                    'message': f'El usuario ({opposing_player}) no existe,' +\
                     f'o username incorrecto por favor introduzca un username' +
                     f' correcto para el jugador 2'
                 },
@@ -34,7 +35,7 @@ class GameListCreate(APIView):
         # Valida que el (opposing_player) no sea el mismo que el jugador actual.
         if player_x == player_o:
             return Response({
-                'Mensaje': f'El jugador 2 debe ser distinto al jugador actual.'
+                'message': f'El jugador 2 debe ser distinto al jugador actual.'
             })
         
         # Validar si existe una partida inciada sin finalizar.
@@ -45,7 +46,7 @@ class GameListCreate(APIView):
         if game_before.exists():
             game_before_ser = GameSerializer(game_before[0])
             return Response({
-                'Mensaje': 'Ya tienes una partida inciada debes finalizarla'+\
+                'message': 'Ya tienes una partida inciada debes finalizarla'+\
                 ' para comenzar otra',
                 'Game': game_before_ser.data
             })
@@ -61,7 +62,7 @@ class GameListCreate(APIView):
         serializer = GameSerializer(game)
 
         return Response({
-            'Mensaje':'La partida ha comenzado',
+            'message':'La partida ha comenzado',
             'Game': serializer.data
         }, status=status.HTTP_201_CREATED)
 
@@ -75,7 +76,7 @@ class GameDetail(APIView):
             game = Game.objects.get(pk=pk)
         except Game.DoesNotExist:
             return Response(
-                {'Mensaje': f'Game con el id ({pk}) no existe'}, 
+                {'message': f'Game con el id ({pk}) no existe'}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         serializer = GameSerializer(game)
@@ -104,7 +105,7 @@ class MakeMove(APIView):
             game = Game.objects.get(pk=game_id)
         except Game.DoesNotExist:
             return Response(
-                {'Mensaje': f'Game con el id ({game_id}) no existe'},
+                {'message': f'Game con el id ({game_id}) no existe'},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
@@ -115,27 +116,27 @@ class MakeMove(APIView):
         # Validaciones:
         if game.winner:
             return Response(
-                {"Mensaje": f"La partida ya ha finalizado, ganador:" +\
+                {"message": f"La partida ya ha finalizado, ganador:" +\
                 f" {game.winner.username}"}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
                 
         if game.player_turn != player_make_move:
             return Response(
-                {"Mensaje": "No es tu turno, es el turno del oponente."},
+                {"message": "No es tu turno, es el turno del oponente."},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         if position not in range(0, 9):
             return Response(
-                {"Mensaje": "Debes colocar una posicion válida para el" +\
+                {"message": "Debes colocar una posicion válida para el" +\
                 " tablero del 0 al 8."}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         if game.board[position] != " ":
             return Response(
-                {"Mensaje": "La posición del movimiento que desea realizar"+\
+                {"message": "La posición del movimiento que desea realizar"+\
                 " ya esta ocupada."},
                 status=status.HTTP_400_BAD_REQUEST
             )
@@ -148,19 +149,19 @@ class MakeMove(APIView):
             game=game, player=player_make_move, move=position
         )
 
-        # Mensajes de movimientos realizados, victoria o empate.
+        # messages de movimientos realizados, victoria o empate.
         if game.winner:
             return Response({
-                'Mensaje': '¡Felicidades has ganado!',
+                'message': '¡Felicidades has ganado!',
                 'winner_combination': game.winner_combination
             })
         elif " " not in game.board:
             return Response({
-                'Mensaje': '¡Empate!'
+                'message': '¡Empate!'
             })
         
         return Response({
-            'Mensaje': 'Movimiento realizado',
+            'message': 'Movimiento realizado',
             'board': game.board
         },status=status.HTTP_200_OK)
 
@@ -169,6 +170,7 @@ class GameLogList(APIView):
     """
         Ver partidas mediante un (id) de (Game).
     """
+    permission_classes = [AllowAny]
     def get(self, request, game_id):
         game_logs = GameLog.objects.filter(game_id=game_id)
         serializer = GameLogSerializer(game_logs, many=True)
